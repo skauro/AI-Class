@@ -1,0 +1,246 @@
+% Symmetry rules
+near(X,Y) => near(Y,X).
+east(X,Y) => west(Y,X).
+west(X,Y) => east(Y,X).
+north(X,Y) => south(Y,X).
+south(X,Y) => north(Y,X).
+
+% Transitivity rules
+east(X,Y) & east(Y,Z) => east(X,Z).
+west(X,Y) & west(Y,Z) => west(X,Z).
+north(X,Y) & north(Y,Z) => north(X,Z).
+south(X,Y) & south(Y,Z) => south(X,Z).
+
+% Movement rules: Maintain north/south relations when moving east/west
+north(X,Y) & east(Y,Z) => north(X,Z).
+south(X,Y) & east(Y,Z) => south(X,Z).
+north(X,Y) & west(Y,Z) => north(X,Z).
+south(X,Y) & west(Y,Z) => south(X,Z).
+east(X,Y) & north(Y,Z) => east(X,Z).
+east(X,Y) & south(Y,Z) => east(X,Z).
+west(X,Y) & north(Y,Z) => west(X,Z).
+west(X,Y) & south(Y,Z) => west(X,Z).
+
+
+% Facts
+near(gondor, mordor).
+east(gondor, mordor).
+
+near(gondor, rohan).
+north(rohan, gondor).
+
+near(rohan, lothlorien).
+north(lothlorien, rohan).
+
+near(lothlorien, moria).
+east(lothlorien, moria).
+
+near(moria, highpass).
+north(highpass, moria).
+
+near(highpass, rivendell).
+west(rivendell, highpass).
+
+near(rivendell, bree).
+west(bree, rivendell).
+
+west(shire, bree).
+near(shire, bree).
+
+
+
+
+-south(mordor, shire). % 1
+
+-north(mordor, shire). % 2
+
+-east(mordor, shire). % 3
+
+-west(mordor, shire). % 4
+
+vastused :
+
+1. result: proof found
+
+proof:
+ 1: [in] -north(X,Y) | -east(Y,Z) | north(X,Z).
+ 2: [in] -north(X,Y) | -north(Z,X) | north(Z,Y).
+ 3: [in] north(rohan,gondor).
+ 4: [mp, 2, 3] -north(X,rohan) | north(X,gondor).
+ 5: [in] north(lothlorien,rohan).
+ 6: [mp, 4, 5] north(lothlorien,gondor).
+ 7: [mp, 1, 6] -east(gondor,X) | north(lothlorien,X).
+ 8: [in] east(gondor,mordor).
+ 9: [mp, 7, 8] north(lothlorien,mordor).
+ 10: [in] -north(X,Y) | south(Y,X).
+ 11: [mp, 9, 10] south(mordor,lothlorien).
+ 12: [in] -south(X,Y) | -south(Z,X) | south(Z,Y).
+ 13: [in] -north(X,Y) | -west(Y,Z) | north(X,Z).
+ 14: [in] -south(X,Y) | -east(Y,Z) | south(X,Z).
+ 15: [in] north(highpass,moria).
+ 16: [mp, 10, 15] south(moria,highpass).
+ 17: [mp, 14, 16] -east(highpass,X) | south(moria,X).
+ 18: [in] -east(X,Y) | -east(Z,X) | east(Z,Y).
+ 19: [in] -west(X,Y) | east(Y,X).
+ 20: [in] west(bree,rivendell).
+ 21: [mp, 19, 20] east(rivendell,bree).
+ 22: [mp, 18, 21] -east(X,rivendell) | east(X,bree).
+ 23: [in] west(rivendell,highpass).
+ 24: [mp, 19, 23] east(highpass,rivendell).
+ 25: [mp, 22, 24] east(highpass,bree).
+ 26: [in] west(shire,bree).
+ 27: [mp, 19, 26] east(bree,shire).
+ 28: [mp, 18, 27] -east(X,bree) | east(X,shire).
+ 29: [mp, 25, 28] east(highpass,shire).
+ 30: [mp, 17, 29] south(moria,shire).
+ 31: [in] -south(X,Y) | north(Y,X).
+ 32: [mp, 30, 31] north(shire,moria).
+ 33: [mp, 13, 32] -west(moria,X) | north(shire,X).
+ 34: [in] -east(X,Y) | west(Y,X).
+ 35: [in] east(lothlorien,moria).
+ 36: [mp, 34, 35] west(moria,lothlorien).
+ 37: [mp, 33, 36] north(shire,lothlorien).
+ 38: [mp, 37, 10] south(lothlorien,shire).
+ 39: [mp, 12, 38] -south(X,lothlorien) | south(X,shire).
+ 40: [in] -south(mordor,shire).
+ 41: [mp, 11, 39, 40] false
+
+
+ 2.result: proof found
+
+proof:
+ 1: [in] -south(X,Y) | -east(Y,Z) | south(X,Z).
+ 2: [in] -north(X,Y) | -north(Z,X) | north(Z,Y).
+ 3: [in] north(rohan,gondor).
+ 4: [mp, 2, 3] -north(X,rohan) | north(X,gondor).
+ 5: [in] north(lothlorien,rohan).
+ 6: [mp, 4, 5] north(lothlorien,gondor).
+ 7: [in] -north(X,Y) | south(Y,X).
+ 8: [mp, 6, 7] south(gondor,lothlorien).
+ 9: [mp, 1, 8] -east(lothlorien,X) | south(gondor,X).
+ 10: [in] -south(X,Y) | -west(Z,X) | west(Z,Y).
+ 11: [mp, 10, 8] -west(X,gondor) | west(X,lothlorien).
+ 12: [in] -east(X,Y) | west(Y,X).
+ 13: [in] east(gondor,mordor).
+ 14: [mp, 12, 13] west(mordor,gondor).
+ 15: [mp, 11, 14] west(mordor,lothlorien).
+ 16: [in] -west(X,Y) | east(Y,X).
+ 17: [mp, 15, 16] east(lothlorien,mordor).
+ 18: [mp, 9, 17] south(gondor,mordor).
+ 19: [in] -south(X,Y) | north(Y,X).
+ 20: [mp, 18, 19] north(mordor,gondor).
+ 21: [in] -north(X,Y) | -east(Y,Z) | north(X,Z).
+ 22: [mp, 20, 21] -east(gondor,X) | north(mordor,X).
+ 23: [in] -north(X,Y) | -west(Z,X) | west(Z,Y).
+ 24: [mp, 23, 6] -west(X,lothlorien) | west(X,gondor).
+ 25: [in] -south(X,Y) | -east(Z,X) | east(Z,Y).
+ 26: [in] north(highpass,moria).
+ 27: [mp, 7, 26] south(moria,highpass).
+ 28: [mp, 25, 27] -east(X,moria) | east(X,highpass).
+ 29: [in] east(lothlorien,moria).
+ 30: [mp, 28, 29] east(lothlorien,highpass).
+ 31: [in] -east(X,Y) | -east(Z,X) | east(Z,Y).
+ 32: [in] -west(X,Y) | -west(Z,X) | west(Z,Y).
+ 33: [in] west(bree,rivendell).
+ 34: [mp, 32, 33] -west(X,bree) | west(X,rivendell).
+ 35: [in] west(shire,bree).
+ 36: [mp, 34, 35] west(shire,rivendell).
+ 37: [in] west(rivendell,highpass).
+ 38: [mp, 32, 37] -west(X,rivendell) | west(X,highpass).
+ 39: [mp, 36, 38] west(shire,highpass).
+ 40: [mp, 39, 16] east(highpass,shire).
+ 41: [mp, 31, 40] -east(X,highpass) | east(X,shire).
+ 42: [mp, 30, 41] east(lothlorien,shire).
+ 43: [mp, 42, 12] west(shire,lothlorien).
+ 44: [mp, 24, 43] west(shire,gondor).
+ 45: [mp, 44, 16] east(gondor,shire).
+ 46: [in] -north(mordor,shire).
+ 47: [mp, 22, 45, 46] false
+
+3.result: proof found
+
+proof:
+ 1: [in] -south(X,Y) | -east(Y,Z) | south(X,Z).
+ 2: [in] -north(X,Y) | -north(Z,X) | north(Z,Y).
+ 3: [in] north(rohan,gondor).
+ 4: [mp, 2, 3] -north(X,rohan) | north(X,gondor).
+ 5: [in] north(lothlorien,rohan).
+ 6: [mp, 4, 5] north(lothlorien,gondor).
+ 7: [in] -north(X,Y) | south(Y,X).
+ 8: [mp, 6, 7] south(gondor,lothlorien).
+ 9: [mp, 1, 8] -east(lothlorien,X) | south(gondor,X).
+ 10: [in] -south(X,Y) | -west(Z,X) | west(Z,Y).
+ 11: [mp, 10, 8] -west(X,gondor) | west(X,lothlorien).
+ 12: [in] -east(X,Y) | west(Y,X).
+ 13: [in] east(gondor,mordor).
+ 14: [mp, 12, 13] west(mordor,gondor).
+ 15: [mp, 11, 14] west(mordor,lothlorien).
+ 16: [in] -west(X,Y) | east(Y,X).
+ 17: [mp, 15, 16] east(lothlorien,mordor).
+ 18: [mp, 9, 17] south(gondor,mordor).
+ 19: [mp, 18, 10] -west(X,gondor) | west(X,mordor).
+ 20: [in] -north(X,Y) | -west(Z,X) | west(Z,Y).
+ 21: [mp, 20, 6] -west(X,lothlorien) | west(X,gondor).
+ 22: [in] -south(X,Y) | -east(Z,X) | east(Z,Y).
+ 23: [in] north(highpass,moria).
+ 24: [mp, 7, 23] south(moria,highpass).
+ 25: [mp, 22, 24] -east(X,moria) | east(X,highpass).
+ 26: [in] east(lothlorien,moria).
+ 27: [mp, 25, 26] east(lothlorien,highpass).
+ 28: [in] -east(X,Y) | -east(Z,X) | east(Z,Y).
+ 29: [in] -west(X,Y) | -west(Z,X) | west(Z,Y).
+ 30: [in] west(bree,rivendell).
+ 31: [mp, 29, 30] -west(X,bree) | west(X,rivendell).
+ 32: [in] west(shire,bree).
+ 33: [mp, 31, 32] west(shire,rivendell).
+ 34: [in] west(rivendell,highpass).
+ 35: [mp, 29, 34] -west(X,rivendell) | west(X,highpass).
+ 36: [mp, 33, 35] west(shire,highpass).
+ 37: [mp, 36, 16] east(highpass,shire).
+ 38: [mp, 28, 37] -east(X,highpass) | east(X,shire).
+ 39: [mp, 27, 38] east(lothlorien,shire).
+ 40: [mp, 39, 12] west(shire,lothlorien).
+ 41: [mp, 21, 40] west(shire,gondor).
+ 42: [mp, 19, 41] west(shire,mordor).
+ 43: [in] -east(mordor,shire).
+ 44: [mp, 42, 16, 43] false
+
+4.result: proof found
+
+proof:
+ 1: [in] -south(X,Y) | -east(Y,Z) | south(X,Z).
+ 2: [in] -north(X,Y) | -north(Z,X) | north(Z,Y).
+ 3: [in] north(rohan,gondor).
+ 4: [mp, 2, 3] -north(X,rohan) | north(X,gondor).
+ 5: [in] north(lothlorien,rohan).
+ 6: [mp, 4, 5] north(lothlorien,gondor).
+ 7: [in] -north(X,Y) | south(Y,X).
+ 8: [mp, 6, 7] south(gondor,lothlorien).
+ 9: [mp, 1, 8] -east(lothlorien,X) | south(gondor,X).
+ 10: [in] -south(X,Y) | -east(Z,X) | east(Z,Y).
+ 11: [in] north(highpass,moria).
+ 12: [mp, 7, 11] south(moria,highpass).
+ 13: [mp, 10, 12] -east(X,moria) | east(X,highpass).
+ 14: [in] east(lothlorien,moria).
+ 15: [mp, 13, 14] east(lothlorien,highpass).
+ 16: [in] -east(X,Y) | -east(Z,X) | east(Z,Y).
+ 17: [in] -west(X,Y) | -west(Z,X) | west(Z,Y).
+ 18: [in] west(bree,rivendell).
+ 19: [mp, 17, 18] -west(X,bree) | west(X,rivendell).
+ 20: [in] west(shire,bree).
+ 21: [mp, 19, 20] west(shire,rivendell).
+ 22: [in] west(rivendell,highpass).
+ 23: [mp, 17, 22] -west(X,rivendell) | west(X,highpass).
+ 24: [mp, 21, 23] west(shire,highpass).
+ 25: [in] -west(X,Y) | east(Y,X).
+ 26: [mp, 24, 25] east(highpass,shire).
+ 27: [mp, 16, 26] -east(X,highpass) | east(X,shire).
+ 28: [mp, 15, 27] east(lothlorien,shire).
+ 29: [mp, 9, 28] south(gondor,shire).
+ 30: [in] -south(X,Y) | -west(Z,X) | west(Z,Y).
+ 31: [mp, 29, 30] -west(X,gondor) | west(X,shire).
+ 32: [in] -east(X,Y) | west(Y,X).
+ 33: [in] east(gondor,mordor).
+ 34: [mp, 32, 33] west(mordor,gondor).
+ 35: [in] -west(mordor,shire).
+ 36: [mp, 31, 34, 35] false
